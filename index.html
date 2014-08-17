@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ng-app="gofish">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+    <script src="///cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-sanitize.js"></script>
+    <meta charset=utf-8 />
+    <title>Go Fish</title>
+</head>
+
+<body ng-controller="ctrl" class="{{colorClass()}}">
+    <div >
+        <div class="container" ng-show="currentScreen == 'start' && !gameState.gameOver">
+            <div class="row text-center">
+                <h1>Go Fish</h1>
+            </div>
+            <div class="row">
+                <button type="button" ng-click="startNewGame()" class="main-btn btn btn-default col-md-4 col-md-offset-4 col-sm-4 col-sm-offset-4 col-xs-12">New Game &clubs;</button>
+            </div>
+            <div class="row">
+                <button type="button" ng-click="joinGameScreen()" class="main-btn btn btn-default col-md-4 col-md-offset-4 col-sm-4 col-sm-offset-4 col-xs-12">Join Game &spades;</button>
+            </div>
+        </div>
+        <div class="container" ng-show="(currentScreen == 'new-game' ||( !gameState.activePlayer  && currentScreen == 'play-game')) && !gameState.gameOver">
+            <div class="row text-center">
+                <h3>Another player can join using this game ID:</h3>
+            </div>
+            <div class="row text-center">
+                <h3>{{formattedGameId}}</h3>
+            </div>
+        </div>
+        <div class="container" ng-show="gameState.gameOver">
+            <div class="row text-center">
+                <h3>{{gameState.players[currentPlayer].message}}</h3>
+            </div>
+        </div>
+        <div class="container" ng-show="currentScreen == 'join-game' && !gameState.gameOver">
+            <div class="row text-center">
+                <h3>Enter a game ID to join:</h3>
+            </div>
+            <div class="row text-center">
+                <form ng-submit="enterGame()">
+                    <div class="input-group col-md-4 col-md-offset-4 col-sm-4 col-sm-offset-4 col-xs-12">
+                        <input id="gameIdInput" ng-model="gameToJoin" type="text" class="form-control" autofocus>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Go!</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="container col-md-4 col-md-offset-4 col-sm-4 col-sm-offset-4 col-xs-12" ng-show="(currentScreen == 'play-game' && gameState.activePlayer) && !gameState.gameOver">
+            <div class="row">
+                <button type="button" class="main-btn btn btn-default col-md-12 col-sm-12 col-xs-12">{{gameState.players[currentPlayer].message}}</button>
+            </div>
+            <accordion close-others="oneAtATime">
+                <accordion-group is-open="pisopen">
+                    <accordion-heading ng-click="pisopen=!pisopen">
+                        <div>Pairs
+                            <span class="pull-right">
+                                <span class="badge">{{gameState.players[currentPlayer].pairs.length || 0}}</span>
+                            <i class="glyphicon" ng-class="{'glyphicon-chevron-down': pisopen, 'glyphicon-chevron-right': !pisopen}"></i>
+                            </span>
+                        </div>
+                    </accordion-heading>
+                    <div class="row" ng-repeat="pair in gameState.players[currentPlayer].pairs">
+                        <div class="">
+                            <button type="button" ng-class="btnColor(pairToArray(pair)[0])" class="btn btn-default btn-sm col-md-5 col-sm-5 col-xs-5 card-btn col-md-offset-1 col-sm-offset-1 col-xs-offset-1"><span ng-bind-html="fancy(pairToArray(pair)[0])"></span></button>
+                            <button type="button" ng-class="btnColor(pairToArray(pair)[1])" class="btn btn-default btn-sm col-md-5 col-sm-5 col-xs-5 card-btn"><span ng-bind-html="fancy(pairToArray(pair)[1])"></span></button>
+                        </div>
+                    </div>
+                </accordion-group>
+                <accordion-group is-open="hisopen">
+                    <accordion-heading ng-click="hisopen=!hisopen">
+                        <div>Hand
+                            <span class="pull-right">
+                                <span class="badge">{{gameState.players[currentPlayer].hand.length}}</span>
+                            <i class="glyphicon" ng-class="{'glyphicon-chevron-down': hisopen, 'glyphicon-chevron-right': !hisopen}"></i>
+                            </span>
+                        </div>
+                    </accordion-heading>
+                    <div class="row" ng-repeat="card in gameState.players[currentPlayer].hand">
+                        <div class="">
+                            <button type="button" ng-click="requestCard(card)" ng-class="btnColor(card)" class="btn btn-default btn-sm col-md-10 col-sm-10 col-xs-10 col-md-offset-1 col-sm-offset-1 col-xs-offset-1 card-btn"><span ng-bind-html="fancy(card)"></span></button>
+                        </div>
+                    </div>
+                </accordion-group>
+            </accordion>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.firebase.com/js/client/1.0.18/firebase.js"></script>
+<script src="https://cdn.firebase.com/libs/angularfire/0.8.0/angularfire.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="js/script.js"></script>
+<script src="js/ui-bootstrap-tpls-0.11.0.min.js"></script>
+
+</html>

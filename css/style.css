@@ -1,0 +1,50 @@
+@charset"utf-8";
+
+/* CSS Document */
+
+body {
+ padding: 20px;
+ min-height: 2000px;
+ padding-top: 70px;
+ font-family: ""Courier New", Courier, monospace";
+}
+.search {
+ margin-left: 10px;
+}
+.main-btn {
+ /*margin:10px;*/
+ margin-top: 10px;
+ margin-bottom: 10px;
+}
+.card-btn {
+ margin-top: 5px;
+ margin-bottom: 5px;
+ font-size: 1.5em;
+}
+.col-centered {
+ float: none;
+ margin: 0 auto;
+}
+#gameIdInput {
+ text-align: center;
+}
+.green {
+ background-color: #33FF66;
+}
+.red {
+ background-color: #FF6347;
+}
+.card-red{
+ color:red;
+}
+/*.card-btn-left{*/
+
+/* margin-right: 5px;*/
+
+/*}*/
+
+/*.card-btn-right{*/
+
+/* margin-left: 5px;*/
+
+/*}*/
